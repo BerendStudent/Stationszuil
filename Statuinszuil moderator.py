@@ -1,4 +1,6 @@
 import csv
+import os
+import psycopg2
 
 
 data = []
@@ -16,25 +18,19 @@ def removeItem(num):
         for x in data:
             writer.writerow(x)
 
-def moderate(item):
-    print(str(item))
-    goed = input('Goedgekeurd, Y/N: ')
-    if goed == 'Y':
-        return True
-    elif goed == 'N':
-        return False
-    else:
-        print('Y of N')
-
 with open('data.csv', 'r') as file:
-    reader = csv.reader(file)
-    writer = csv.writer(file)
-    for row in reader:
-        x = moderate(row)
-        if x:
-            print('YES!')
-        elif not x:
-            print('NO!')
-            #removeItem(row)
-
-
+    with open('reviews.csv', 'a') as newFile:
+        reader = csv.reader(file)
+        writer = csv.writer(newFile)
+        for row in reader:
+            print(str(row))
+            goed = input('Goedgekeurd, Y/N: ')
+            if goed == 'Y':
+                newFile.write(str(row))
+                print("Goedgekeurd.")
+            elif goed == 'N':
+                print("Afgekeurd.")
+            else:
+                print('Y of N')
+        os.remove('data.csv')
+        print('Alles is nagekeken.')
