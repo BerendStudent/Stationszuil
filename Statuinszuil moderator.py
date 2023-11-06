@@ -7,16 +7,6 @@ data = []
 email = input('Voer uw email adres in: ')
 naam = input('Voer uw naam in: ')
 
-def removeItem(num):
-    with open('data.csv', 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            data.append(row)
-    with open('data.csv', 'w') as file:
-        writer = csv.writer(file)
-        data.pop(num)
-        for x in data:
-            writer.writerow(x)
 
 with open('data.csv', 'r') as file:
     with open('reviews.csv', 'a') as newFile:
