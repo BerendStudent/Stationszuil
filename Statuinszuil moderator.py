@@ -37,36 +37,32 @@ def clearFile(file):
 
 
 with open('data.csv', 'r') as file:
-    with open('reviews.csv', 'a', newline='') as newFile:
-        reader = csv.reader(file)
-        writer = csv.writer(newFile)
-        print('Voer STOP in om te stoppen.')
-        for row in reader:
-            if row == []:
-                continue
-            print(str(row))
-            goed = input('Goedgekeurd, Y/N: ')
-            if goed == 'Y':
-                row.append(naam)
-                row.append(email)
-                writer.writerow(row)
-                query = """insert into Admins (Adminnaam, email) VALUES (%s, %s) ON CONFLICT DO NOTHING; 
-                insert into berichten (naam, datum, stationsnaam, inhoud, Email) 
-                VALUES (%s,%s,%s,%s,%s);"""
-                invoer = (naam, email, row[0], row[1], row[2], row[3], email)
-                cursor.execute(query, invoer)
-                connection.commit()
-                deleteLine(row)
-                print("Goedgekeurd.")
-            elif goed == 'N':
-                writer.writerow(row)
-                deleteLine(row)
-                print("Afgekeurd.")
-            elif goed == 'STOP':
-                stopped = True
-                break
-            else:
-                print('Y of N')
-        if not stopped:
-            clearFile('data.csv')
-        print('Alles is nagekeken.')
+    reader = csv.reader(file)
+    print('Voer STOP in om te stoppen.')
+    for row in reader:
+        if row == []:
+            continue
+        print(str(row))
+        goed = input('Goedgekeurd, Y/N: ')
+        if goed == 'Y':
+            row.append(naam)
+            row.append(email)
+            query = """insert into Admins (Adminnaam, email) VALUES (%s, %s) ON CONFLICT DO NOTHING; 
+            insert into berichten (naam, datum, stationsnaam, inhoud, Email) 
+            VALUES (%s,%s,%s,%s,%s);"""
+            invoer = (naam, email, row[0], row[1], row[2], row[3], email)
+            cursor.execute(query, invoer)
+            connection.commit()
+            deleteLine(row)
+            print("Goedgekeurd.")
+        elif goed == 'N':
+            deleteLine(row)
+            print("Afgekeurd.")
+        elif goed == 'STOP':
+            stopped = True
+            break
+        else:
+            print('Y of N')
+    if not stopped:
+        clearFile('data.csv')
+    print('Alles is nagekeken.')
