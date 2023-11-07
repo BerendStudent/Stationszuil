@@ -1,3 +1,5 @@
+import tkinter
+
 import psycopg2
 import requests
 from tkinter import *
@@ -15,15 +17,34 @@ def Coordinates(city):
     answer = requests.get(api).json()
     coordinates = [answer[0]['lat'], answer[0]['lon']]
     return coordinates
+
+def Services(city):
+    query = f"""SELECT ov_bike, elevator, toilet, park_and_ride FROM station_service WHERE station_city = '{city}'"""
+    cursor.execute(query)
+    return cursor.fetchall()
+
 def onclick(city):
     latlong = Coordinates(city)
-
+    Diensten = Services(city)
+    if Diensten[0][0]:
+        fiets = Label(root, image=img_ovfiets)
+        fiets.pack(side=tkinter.BOTTOM)
+    if Diensten[0][1]:
+        elevator = Label(root, image=img_lift)
+        elevator.pack(side=tkinter.BOTTOM)
+    if Diensten[0][2]:
+        toilet = Label(root, image=img_toilet)
+        toilet.pack(side=tkinter.BOTTOM)
+    if Diensten[0][3]:
+        pr = Label(root, image=img_pr)
+        pr.pack(side=tkinter.BOTTOM)
     """"tekst volgt het algoritme: 1. NAAM uit PLAATS zegt BERICHT. Kan vast met een loop, maar dit werkt."""
     tekst = (f"Welkom in {city} \n" 
              f"1. {output[0][0]} uit {output[0][2]} zegt, '{output[0][1]}',\n 2. {output[1][0]} uit {output[1][2]} zegt, '{output[1][1]}',\n"
              f"3. {output[2][0]} uit {output[2][2]} zegt, '{output[2][1]}',\n 4.  {output[3][0]} uit {output[3][2]} zegt, '{output[3][1]}',\n "
              f"5.  {output[4][0]} uit {output[4][2]} zegt, '{output[4][1]}'\n"
-             f" Het weer vandaag is:{Weather(latlong[0], latlong[1])}")
+             f" Het weer vandaag is:{Weather(latlong[0], latlong[1])}\n"
+             f"Diensten:")
     text = Label(master=root,
                  text=tekst,
                  background='yellow',
@@ -50,6 +71,10 @@ output = cursor.fetchall()
 
 
 root = Tk()
+img_ovfiets = PhotoImage(file='images/img_ovfiets.png')
+img_lift = PhotoImage(file='images/img_lift.png')
+img_pr = PhotoImage(file='images/img_pr.png')
+img_toilet = PhotoImage(file='images/img_toilet.png')
 root.title("Reviews")
 Amsterdam = Button(root,text='Amsterdam Centraal', command=lambda: onclick('Amsterdam'))
 Amsterdam.pack()

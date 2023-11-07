@@ -27,6 +27,13 @@ else:
         naam = 'anoniem'
     else:
         naam = input
-    time = str(datetime.now())
-    list = [naam, time, kiesStation(), message]
-    invoer(list)
+    with open('blacklist', 'r') as file:
+        for line in file:
+            if line in message:
+                blocked = True
+            if line in naam:
+                blocked = True
+    if not blocked:
+        time = str(datetime.now())
+        list = [naam, time, kiesStation(), message]
+        invoer(list)

@@ -2,7 +2,7 @@ import csv
 import os
 import psycopg2
 
-stopped = False
+
 data = []
 email = input('Voer uw email adres in: ')
 naam = input('Voer uw naam in: ')
@@ -14,6 +14,7 @@ connection = psycopg2.connect(
     port="5432"
 )
 cursor = connection.cursor()
+
 
 def deleteLine(delete):
     with open('data.csv', 'r') as file:
@@ -35,32 +36,49 @@ def clearFile(file):
     with open(file, 'r+') as clearedFile:
         clearedFile.truncate(0)
 
+def moderate():
+    with open('data.csv', 'r') as file:
+        reader = csv.reader(file)
+        print('Voer STOP in om te stoppen.')
+        for row in reader:
+            if row == []:
+                continue
+            print(str(row))
+            goed = input('Goedgekeurd, Y/N: ')
+            stopped = False
+            if goed == 'Y':
+                query = """insert into Admins (Adminnaam, email) VALUES (%s, %s) ON CONFLICT DO NOTHING; 
+                insert into berichten (naam, datum, stationsnaam, inhoud, Email) 
+                VALUES (%s,%s,%s,%s,%s);"""
+                invoer = (naam, email, row[0], row[1], row[2], row[3], email)
+                cursor.execute(query, invoer)
+                connection.commit()
+                deleteLine(row)
+                print("Goedgekeurd.")
+            elif goed == 'N':
+                deleteLine(row)
+                print("Afgekeurd.")
+            elif goed == 'STOP':
+                stopped = True
+                break
+            else:
+                print('Y of N')
+        if not stopped:
+            clearFile('data.csv')
+        print('Alles is nagekeken.')
 
-with open('data.csv', 'r') as file:
-    reader = csv.reader(file)
-    print('Voer STOP in om te stoppen.')
-    for row in reader:
-        if row == []:
-            continue
-        print(str(row))
-        goed = input('Goedgekeurd, Y/N: ')
-        if goed == 'Y':
-            query = """insert into Admins (Adminnaam, email) VALUES (%s, %s) ON CONFLICT DO NOTHING; 
-            insert into berichten (naam, datum, stationsnaam, inhoud, Email) 
-            VALUES (%s,%s,%s,%s,%s);"""
-            invoer = (naam, email, row[0], row[1], row[2], row[3], email)
-            cursor.execute(query, invoer)
-            connection.commit()
-            deleteLine(row)
-            print("Goedgekeurd.")
-        elif goed == 'N':
-            deleteLine(row)
-            print("Afgekeurd.")
-        elif goed == 'STOP':
-            stopped = True
-            break
-        else:
-            print('Y of N')
-    if not stopped:
-        clearFile('data.csv')
-    print('Alles is nagekeken.')
+def blacklist():
+    with open('blacklist', 'a') as file:
+        woord = input('Voer het ongewenste woord in: ')
+        file.write(woord + '\n')
+
+keuze = input('Kies een optie: \n'
+              '1. Bekijk reviews\n'
+              '2. Voeg toe aan de blacklist.\n'
+              '')
+if keuze == '1':
+    moderate()
+elif keuze == '2':
+    blacklist()
+else:
+    print('1 of 2')
