@@ -7,10 +7,10 @@ data = []
 email = input('Voer uw email adres in: ')
 naam = input('Voer uw naam in: ')
 connection = psycopg2.connect(
-    database="Project Stationszuil",
+    database="StationsReviews",
     user="postgres",
     password="password",
-    host="localhost",
+    host="20.82.106.102",
     port="5432"
 )
 cursor = connection.cursor()

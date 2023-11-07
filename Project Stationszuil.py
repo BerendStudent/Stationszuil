@@ -30,4 +30,3 @@ else:
     time = str(datetime.now())
     list = [naam, time, kiesStation(), message]
     invoer(list)
-    print(list[0])
