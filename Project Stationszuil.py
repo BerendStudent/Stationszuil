@@ -17,8 +17,10 @@ def invoer(y):
         file.close()
 
 
+#Bericht infrastructuur
 
 message = input('Voer hier uw bericht in: ')
+blocked = False
 if len(message) > 140:
     print('Uw bericht is te lang. Probeer het opnieuw.')
 else:
@@ -29,11 +31,11 @@ else:
         naam = input
     with open('blacklist', 'r') as file:
         for line in file:
-            if line in message:
+            if line in message: #kijkt of er scheldwoorden in zitten
                 blocked = True
             if line in naam:
                 blocked = True
-    if not blocked:
+    if not blocked: #Zo niet, hoera!
         time = str(datetime.now())
         list = [naam, time, kiesStation(), message]
         invoer(list)
