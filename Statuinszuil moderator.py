@@ -2,6 +2,7 @@ import csv
 import os
 import psycopg2
 
+stopped = False
 data = []
 email = input('Voer uw email adres in: ')
 naam = input('Voer uw naam in: ')
@@ -14,9 +15,24 @@ connection = psycopg2.connect(
 )
 cursor = connection.cursor()
 
+def deleteLine(delete):
+    with open('data.csv', 'r') as file:
+        reader = csv.reader(file)
+        with open('temp.csv', 'w', newline='') as temp:
+            writer = csv.writer(temp)
+            for row in reader:
+                writer.writerow(row)
+    with open('data.csv', 'w') as file:
+        writer = csv.writer(file)
+        with open('temp.csv', 'r') as temp:
+            reader = csv.reader(temp)
+            for row in reader:
+                if row != delete:
+                    writer.writerow(row)
+    os.remove('temp.csv')
 
 def clearFile(file):
-    with open(file) as clearedFile:
+    with open(file, 'r+') as clearedFile:
         clearedFile.truncate(0)
 
 
@@ -26,6 +42,8 @@ with open('data.csv', 'r') as file:
         writer = csv.writer(newFile)
         print('Voer STOP in om te stoppen.')
         for row in reader:
+            if row == []:
+                continue
             print(str(row))
             goed = input('Goedgekeurd, Y/N: ')
             if goed == 'Y':
@@ -38,13 +56,17 @@ with open('data.csv', 'r') as file:
                 invoer = (naam, email, row[0], row[1], row[2], row[3], email)
                 cursor.execute(query, invoer)
                 connection.commit()
+                deleteLine(row)
                 print("Goedgekeurd.")
             elif goed == 'N':
                 writer.writerow(row)
+                deleteLine(row)
                 print("Afgekeurd.")
             elif goed == 'STOP':
+                stopped = True
                 break
             else:
                 print('Y of N')
-        clearFile('data.csv')
+        if not stopped:
+            clearFile('data.csv')
         print('Alles is nagekeken.')
