@@ -45,8 +45,6 @@ with open('data.csv', 'r') as file:
         print(str(row))
         goed = input('Goedgekeurd, Y/N: ')
         if goed == 'Y':
-            row.append(naam)
-            row.append(email)
             query = """insert into Admins (Adminnaam, email) VALUES (%s, %s) ON CONFLICT DO NOTHING; 
             insert into berichten (naam, datum, stationsnaam, inhoud, Email) 
             VALUES (%s,%s,%s,%s,%s);"""
