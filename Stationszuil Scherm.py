@@ -85,8 +85,8 @@ query = """SELECT station_city FROM Station_service"""
 cursor.execute(query)
 stationList = cursor.fetchall()
 for row in stationList:
-    Button = Button(root,text=f'{row}', command=lambda: onclick(row))
-    Button.pack()
+    knop = Button(root,text=f'{row[0]}', command=lambda: onclick(row[0]))
+    knop.pack()
 
 Amsterdam = Button(root,text='Amsterdam Centraal', command=lambda: onclick('Amsterdam'))
 Amsterdam.pack()
