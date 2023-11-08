@@ -81,6 +81,13 @@ img_toilet = PhotoImage(file='images/img_toilet.png')
 root.title("Reviews")
 
 #Buttons aanmaken
+query = """SELECT station_city FROM Station_service"""
+cursor.execute(query)
+stationList = cursor.fetchall()
+for row in stationList:
+    Button = Button(root,text=f'{row}', command=lambda: onclick(row))
+    Button.pack()
+
 Amsterdam = Button(root,text='Amsterdam Centraal', command=lambda: onclick('Amsterdam'))
 Amsterdam.pack()
 Utrecht = Button(root,text='Utrecht Centraal', command=lambda: onclick('Utrecht'))
